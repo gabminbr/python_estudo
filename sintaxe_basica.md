@@ -31,4 +31,16 @@ except InsufficientFundsError as e:
     print(f'Transaction failed: {e}')
 ```
 - *from* é uma palavra que usamos para detalhar mais os erros do codigo, serve principalmente quando queremos entender a causa de um erro em especifico:
+## Classes e Objetos
+- dunder methods: são métodos especiais e identificado por dois underscore antes e depois, o uso dele é de fazer overload de funções nativas do python, como por exemplo, se voce cria uma classe chamada Livro, e cria um objeto e tenta usar por exemplo um *len(book)*, vai dar erro, porem pode fazer:
 ```python
+class Book:
+    def __init__(self, pages):
+        self.pages = pages
+
+    def __len__(self):
+        print(self.pages)
+
+book = Book(23)
+print(len(book))
+```
