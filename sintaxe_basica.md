@@ -45,7 +45,7 @@ book = Book(23)
 print(len(book))
 ```
 - atributos dinâmicos: quando você não sabe quais atributos você precisa, vai usar do dinamismo oferecido pelas funcoes built-in do python como *getattr()*, *setattr()*, *hasattr()* e *delattr()*:
-- o *getattr(object, attr_name, optional_default_value)*, vai ser basicamente equivalente a objeto.atributo, entretanto, essa funcao retorna o valor nesse atributo e caso nao encontre esse atributo, lança esse 3 parametro opcional ou um erro.
+- o *getattr(object, attr_name, optional_default_value)*, vai ser basicamente equivalente a *objeto.atributo*, entretanto, essa funcao retorna o valor nesse atributo e caso nao encontre esse atributo, lança esse 3 parametro opcional ou um erro.
 ```python
 class Door:
     def __init__(self, height, weight):
@@ -59,4 +59,17 @@ print(getattr(door_1, 'height'))  # retorna 8
 print(getattr(door_1, 'color'))  # retorna erro
 print(getattr(door_1, 'wood_type', 'From somewhere')) # retorna 'From somewhere'
 ```
-- o *setattr(object, attr_name, value)*
+- o *setattr(object, attr_name, value)* vai ser equivalente a um *object.attribute = value*:
+```python
+class Pessoa:
+    def __init__(self, name, age, gender):
+        self.name = name
+        self.age = age
+        self.gender = gender
+        
+p1 = Pessoa('Hallow', 18, 'F')
+setattr(p1, 'height', 167)
+print(p1.height)
+```
+- *hasattr(object, attr_name)* é importante para verificar a existência do atributo especificado, é interessante de usar antes de usar um getattr ou delattr
+- *delattr(object, attr_name)* por sua vez, é bem autoexplicativo
