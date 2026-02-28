@@ -166,3 +166,40 @@ w = Wallet()
 w.deposit(90)
 print(w.balance) # 90
 ```
+- para o setter usaremos o padrao *@<property_name>.setter:
+```python
+class Wallet:
+    def __init__(self, balance):
+        self.balance = balance # ja validamos no construtor com o uso do set
+    
+    def _validate(self, amount):
+        if amount <= 0:
+            raise ValueError("This amount is not allowed!")
+        
+    def deposit(self, amount):
+        self._validate(amount)
+        self.balance += amount # usamos o setter pra ja validar
+    
+    def withdraw(self, amount):
+        self._validate(amount)
+        if amount > self._balance:
+            raise ValueError('You can\'t withdraw more than you have in you wallet!')
+        self.balance -= amount
+    
+    @property
+    def balance(self):
+        return self._balance
+
+    @balance.setter
+    def balance(self, value):
+        self._validate(value)
+        self._balance = value
+
+my_w = Wallet(8)
+print(my_w.balance) # 8
+
+my_w.balance = 12
+print(my_w.balance) # 12
+
+# ou seja, ao usarmos objeto.atributo apenas, estamos usando o getter, e quando atribuimos valor, estamos chamando o setter
+```
