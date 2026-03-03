@@ -75,6 +75,7 @@ print(p1.height)
 - *delattr(object, attr_name)* por sua vez, é bem autoexplicativo
 
 ## OOP
+### getters e setters
 - como nao existem atributos de acesso no python, a convenção é quando for mexer com atributos privados, eles serem precedidos de um underscoren *_*:
 ```python
 class Wallet:
@@ -203,3 +204,101 @@ print(my_w.balance) # 12
 
 # ou seja, ao usarmos objeto.atributo apenas, estamos usando o getter, e quando atribuimos valor, estamos chamando o setter
 ```
+### Herança
+- permite as classes filhas, herdarem atributos e comportamentos da classe pai, pequeno exemplo:
+```python
+class Parent:
+    # Parent attr e methods
+
+class Child(Parent):
+    # Child inherits, extends, and/or overrides where necessary
+```
+- um exemplo um pouco mais complexo:
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def sound(self):
+        return f'{self.name} makes a sound'
+
+class Dog(Animal):
+    bark = 'woof! woof!! woof!!!'
+
+jack = Dog('Jack')
+print(jack.sound())  # Jack makes a sound
+print(jack.bark)  # woof! woof!! woof!!!
+```
+- podemos fazer override no método bark, basta fazer um *def sound(self) ...* na classe Dog
+- para acessar métodos da classe pai usamos *super*:
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+
+    def sound(self):
+        return f'{self.name} makes a sound'
+
+class Dog(Animal):
+    bark = 'woof! woof!! woof!!!'
+
+    # Call Animal.sound(), then append bark
+    def sound(self):
+        base = super().sound()
+        return f'{base}, then {self.name} barks {self.bark}'
+
+jack = Dog('Jack')
+print(jack.sound())  # Jack makes a sound, then Jack barks woof! woof!! woof!!!
+```
+- também existe a herança múltipla:
+```python
+class Parent:
+    # Attributes and methods for Parent
+
+class Child:
+    # Attributes and methods for Child
+
+class GrandChild(Parent, Child):
+    # GrandChild inherits from both Parent and Child
+    # GrandChild can combine or override behavior from each
+```
+### polimorfismo
+- é o que permite que diferentes classes compartilhem o mesmo nome mas façam diferentes tasks, você chama o mesmo método em cada classe e cada um se comporta de um jeito diferente.
+```python
+class Cat:
+   def speak(self):
+       return "A cat meow"
+
+class Bird:
+   def speak(self):
+       return "A bird tweet"
+  
+class Monkey:
+   def speak(self):
+       return "A monkey ooh ooh aah aah ooh ooh aah aah"
+
+def animal_sound(animal):
+   print(animal.speak())
+
+animal_sound(Cat())
+animal_sound(Bird())
+animal_sound(Monkey())
+```
+### Name mangling
+- serve para evitar que dê conflitos de nomes de classes, principalmente em heranças, usa de double underscore *__*:
+```python
+class Example:
+    def __init__(self):
+        self._internal = 'I can be accessed from outside the class, but should not'
+        self.__private = 'You cannot access me directly from outside the class'
+
+obj = Example()
+
+print(obj._internal) # I can be accessed from outside the class, but should not
+print(obj.__private)  # AttributeError: 'Example' object has no attribute '__private'
+```
+- o que acontece, é que ao colocar o name mangling, ele muda o nome do atributo para _ClassName__attribute, no exemplo no caso, se fizessemos:
+```python
+print(obj._Example__private)
+```
+- funcionaria dessa forma, e printaria  a frase do __private
