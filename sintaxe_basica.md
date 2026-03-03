@@ -302,3 +302,17 @@ print(obj.__private)  # AttributeError: 'Example' object has no attribute '__pri
 print(obj._Example__private)
 ```
 - funcionaria dessa forma, e printaria  a frase do __private
+- na herança, serve para evitar override de atributos, como no exemplo:
+```python
+class Parent:
+    def __init__(self):
+        self.__data = 'Parent data'
+
+class Child(Parent):
+    def __init__(self):
+        super().__init__()
+        self.__data = 'Child data'
+
+c = Child()
+print(c.__dict__) # {'_Parent__data': 'Parent data', '_Child__data': 'Child data'}
+```
