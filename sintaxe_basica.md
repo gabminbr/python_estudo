@@ -316,3 +316,38 @@ class Child(Parent):
 c = Child()
 print(c.__dict__) # {'_Parent__data': 'Parent data', '_Child__data': 'Child data'}
 ```
+### Abstração
+- é o processo de mascarar os detalhes de implementação e mostrar apenas as features essenciais do projeto
+- ABC: abstract base class é a class que você vai herdar, mas não vai instanciar um objeto dela
+- um método abstrato é um método criado numa ABC usando o @abstractmethod decorator, pode ou não ter implementação, ou ter uma padrão, mas toda subclasse DEVE herdar e sobrescrever esse método para ser considerada concreta e instanciável
+```python
+from abc import ABC, abstractmethod
+
+# Define an abstract base class
+class AbstractClass(ABC):
+    @abstractmethod
+    def abstract_method(self):
+        pass
+
+# Concrete subclass that implements the abstract method
+class ConcreteClassOne(AbstractClass):
+    def abstract_method(self):
+        print('Implementation in ConcreteClassOne')
+
+# Another concrete subclass
+class ConcreteClassTwo(AbstractClass):
+    def abstract_method(self):
+        print('Implementation in ConcreteClassTwo')
+```
+## HINT
+- existe em python os type hints, que são meio que uma forma de dizer aos outros o que voce espera de tipo de dado naquele argumento, exemplo:
+```python
+def say_hi(name: str):
+    print(f"hello, {name}")
+```
+- também podemos sinalizar o que a função deve retornar:
+```python
+def add_two(num_1: int, num_2: int) -> int:
+    return num_1 + num_2
+```
+
