@@ -22,6 +22,7 @@ GRANT ALL PRIVILEGES ON DATABASE meu_banco_de_dados TO meu_usuario;
 - *psql -U <nome_usuario> -d <nome_banco_de_dados>*: com esse comando, iremos nos conectar ao banco de dados
 - logado no psql, você faz: *CREATE DATABASE my_database* e cria um novo banco de dados, lembre-se que funciona diferente da hierarquia que estamos acostumados do shell, msm eu logado dentro de um banco de dados e rodar esse comando, ele vai criar um banco de dados 'irmao', nao dentro desse BD que eu estiver
 - para mudar para um bd criado, use *\c nome_bd*
+- para listar as tables em um banco de dados, faça um *\dt*
 ## CREATE TABLE
 ```SQL
 CREATE TABLE products (
@@ -70,4 +71,8 @@ VALUES
   ('Gina', 3),
   ('Pac', 2);
 ```
-
+- para consulta:
+```SQL
+SELECT *
+FROM dogs;
+```
