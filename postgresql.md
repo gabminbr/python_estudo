@@ -18,6 +18,15 @@ CREATE USER meu_usuario WITH PASSWORD 'minha_senha_123';
 ```SQL
 GRANT ALL PRIVILEGES ON DATABASE meu_banco_de_dados TO meu_usuario;
 ```
+- entrar no psql terminal:
+  -- como superusuario:
+  ```SQL
+  sudo -u postgres psql
+  ```
+  -- (crie um usuario no postgres com msm nome do seu no unix):
+  ```SQL
+  psql -U seu_user -d db_name
+  ```
 ## Comandos Frequentes
 - *psql -U <nome_usuario> -d <nome_banco_de_dados>*: com esse comando, iremos nos conectar ao banco de dados
 - logado no psql, você faz: *CREATE DATABASE my_database* e cria um novo banco de dados, lembre-se que funciona diferente da hierarquia que estamos acostumados do shell, msm eu logado dentro de um banco de dados e rodar esse comando, ele vai criar um banco de dados 'irmao', nao dentro desse BD que eu estiver
@@ -76,3 +85,4 @@ VALUES
 SELECT *
 FROM dogs;
 ```
+
