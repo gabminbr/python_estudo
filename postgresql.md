@@ -85,4 +85,99 @@ VALUES
 SELECT *
 FROM dogs;
 ```
+- o * seleciona todas as colunas, mas podemos especificar:
+```SQL
+SELECT name, age
+FROM dogs;
+```
+- podemos ainda colocar condicionais:
+```SQL
+SELECT name
+FROM dogs
+WHERE age < 7;
+```
+## CHAVE PRIMÁRIA (PRIMARY KEY)
+- primary key basicamente é a identificação de cada linha da sua table, não pode ter valor *NULL*, é uma coluna onde identifica cada linha e possibilita que possa distinguir linhas mesmo que seus campos sejam iguais, para colocar numa table (só deve existir uma coluna de primary key) usaremos da regra *column_name data_type PRIMARY KEY*:
+```SQL
+CREATE TABLE students (
+  student_id SERIAL PRIMARY KEY,
+  student_name VARCHAR(100)
+);
+```
+- pode-se ter também a **chave primária composta**, que basicamente acontece quando na sua tabela, não existe apenas uma coluna para identificar a linha, mas quer que a combinação dessas colunas funcione como a primary key:
+```SQL
+CREATE TABLE table_name (
+  column1 data_type column_constraint,
+  column2 data_type column_constraint,
+  column3 data_type column_constraint,
+  ...
+  PRIMARY KEY (column1, column2)
+);
+```
+- num exemplo prático:
+```SQL
+CREATE TABLE students (
+  student_id INT,
+  course_id INT,
+  ...,
+  PRIMARY KEY(student_id, course_id)
+);
+```
+## CHAVE ESTRANGEIRA (FOREIGN KEY)
+- a chave estrangeira é uma coluna que contém referẽncias à chave primária de outra tabela, uma tabela pode ter múltiplas chaves estrangeiras, ***mas não múltiplas chaves primárias****
+```SQL
+CREATE TABLE customers (
+  customer_id SERIAL PRIMARY KEY,
+  first_name VARCHAR(100) NOT NULL,
+  ...
+);
 
+CREATE TABLE orders (
+  order_id SERIAL PRIMARY KEY,
+  customer_id INTEGER,
+  ...
+  FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+);
+```
+## RELAÇÕES
+- 1:1 (um para um): imagine que tem uma tabela de empregados e outra de carros, cada empregado so pode ter um carro e cada carro so pode ter um dono
+- 1:N (um para muitos): imagine uma tabela de clientes e outra de pedidos, um cliente pode ter varios pedidos, mas um pedido só pode ter um cliente
+- N:1 (muitos para um): contrario de 1:N
+- N:N (muitos para muitos): imagine uma tabela de livros e uma de autores, cada livro pode ter varios autores, e cada autor pode ter varios livros
+- importante lembrar que a relacao N:N os bancos de dados não suportam, então o que se faz é criar uma terceira tabela chamada *junction table* que vai linkar ambas tabelas que serão 1:N
+
+## JOIN
+- join operations permitem que combinemos informações que sejam relacionadas numa query
+  -- **inner join**: basicamente pega a intersecção das tabelas, vai filtrar o resultado para incluir apenas as linhas que os valores especificados são iguais em ambas tabelas
+  --- exemplo de tabelas:
+  ```
+  | product_id | product_name     | category    | price (USD) | origin        |
+  | ---------- | ---------------- | ----------- | ----------- | ------------- |
+  | 1          | Ice Cream        | Food        | 2.50        | India         |
+  | 2          | Pizza Margherita | Food        | 12.00       | Italy         |
+  | 3          | Sushi            | Food        | 18.75       | Japan         |
+  | 4          | T-Shirt          | Clothing    | 25.00       | USA           |
+  | 5          | Jeans            | Clothing    | 60.00       | Argentina     |
+  | 6          | Coffee           | Beverages   | 35.00       | France        |
+  | 7          | Juice            | Beverages   | 5.00        | Colombia      |
+  ```
+  ```
+  | sale_id | product_id | quantity | sale_date  |
+  | ------- | ---------- | -------- | ---------- |
+  | 101     | 1          | 2        | 2025-07-18 |
+  | 102     | 2          | 3        | 2025-02-13 |
+  | 103     | 6          | 10       | 2025-06-08 |
+  | 104     | 5          | 8        | 2025-01-10 |
+  | 105     | 2          | 1        | 2025-05-15 |
+  ```
+  --- podemos fazer o inner join:
+  ```SQL
+  SELECT *
+  FROM products
+  INNER JOIN sales
+    ON products.product_id = sales.product_id;
+  ```
+  -- **full outer join**: retorna todas colunas de ambas tabelas, se tem match, ele retorna normal ambas como o inner join, se não tem match, ele retorna mesmo assim com null onde ele não tiver na outra tabela
+  -- **left outer join**: vai pegar todas as linhas da tabela esquerda e dar o match no que tiver match da tabela da direita, se nao tiver, ele vai colocar null
+  -- **right outer join**: pega todas as linhas da tabela da direita, e da o match no que tiver da esquerda, se n tiver, é campo null
+  -- **self join** permite fazer join com ela mesma
