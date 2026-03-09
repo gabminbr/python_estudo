@@ -39,6 +39,8 @@ CREATE TABLE products (
   name VARCHAR(255)
 );
 ```
+## ALTERAR TABELA
+- podemos mudar a tabela usando *ALTER TABLE name_table ADD COLUMN column_name DATATYPE*
 ## Tipos básicos de dados
 - a estrutura basica para criar tabela em SQL:
 ```SQL
@@ -181,3 +183,4 @@ CREATE TABLE orders (
   -- **left outer join**: vai pegar todas as linhas da tabela esquerda e dar o match no que tiver match da tabela da direita, se nao tiver, ele vai colocar null
   -- **right outer join**: pega todas as linhas da tabela da direita, e da o match no que tiver da esquerda, se n tiver, é campo null
   -- **self join** permite fazer join com ela mesma
+
