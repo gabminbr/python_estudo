@@ -39,8 +39,11 @@ CREATE TABLE products (
   name VARCHAR(255)
 );
 ```
-## ALTERAR TABELA
-- podemos mudar a tabela usando *ALTER TABLE name_table ADD COLUMN column_name DATATYPE*
+## ALTERAÇÕES TABELA
+- podemos adicionar uma coluna usando *ALTER TABLE name_table ADD COLUMN column_name DATATYPE*
+- podemos remover uma coluna usando *ALTER TABLE table_name DROP COLUMN column_name;*
+- podemos renomear uma coluna usando *ALTER TABLE table_name RENAME COLUMN column_name TO new_name;*
+- podemos deletar uma linha usando *DELETE FROM table_name WHERE condition;*
 ## Tipos básicos de dados
 - a estrutura basica para criar tabela em SQL:
 ```SQL
@@ -183,4 +186,5 @@ CREATE TABLE orders (
   -- **left outer join**: vai pegar todas as linhas da tabela esquerda e dar o match no que tiver match da tabela da direita, se nao tiver, ele vai colocar null
   -- **right outer join**: pega todas as linhas da tabela da direita, e da o match no que tiver da esquerda, se n tiver, é campo null
   -- **self join** permite fazer join com ela mesma
+
 
