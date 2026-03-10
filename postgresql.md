@@ -28,10 +28,11 @@ GRANT ALL PRIVILEGES ON DATABASE meu_banco_de_dados TO meu_usuario;
   psql -U seu_user -d db_name
   ```
 ## Comandos Frequentes
+
 - *psql -U <nome_usuario> -d <nome_banco_de_dados>*: com esse comando, iremos nos conectar ao banco de dados
 - logado no psql, você faz: *CREATE DATABASE my_database* e cria um novo banco de dados, lembre-se que funciona diferente da hierarquia que estamos acostumados do shell, msm eu logado dentro de um banco de dados e rodar esse comando, ele vai criar um banco de dados 'irmao', nao dentro desse BD que eu estiver
 - para mudar para um bd criado, use *\c nome_bd*
-- para listar as tables em um banco de dados, faça um *\dt*
+- para listar as tables em um banco de dados, faça um *\t*
 ## CREATE TABLE
 ```SQL
 CREATE TABLE products (
@@ -44,6 +45,8 @@ CREATE TABLE products (
 - podemos remover uma coluna usando *ALTER TABLE table_name DROP COLUMN column_name;*
 - podemos renomear uma coluna usando *ALTER TABLE table_name RENAME COLUMN column_name TO new_name;*
 - podemos deletar uma linha usando *DELETE FROM table_name WHERE condition;*
+- podemos fazer um update usando *UPDATE table_name SET column_name=new_value WHERE condition;*
+- 
 ## Tipos básicos de dados
 - a estrutura basica para criar tabela em SQL:
 ```SQL
@@ -186,5 +189,6 @@ CREATE TABLE orders (
   -- **left outer join**: vai pegar todas as linhas da tabela esquerda e dar o match no que tiver match da tabela da direita, se nao tiver, ele vai colocar null
   -- **right outer join**: pega todas as linhas da tabela da direita, e da o match no que tiver da esquerda, se n tiver, é campo null
   -- **self join** permite fazer join com ela mesma
+
 
 
