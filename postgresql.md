@@ -40,6 +40,15 @@ CREATE TABLE products (
   name VARCHAR(255)
 );
 ```
+- para criar uma coluna numa tabela:
+```SQL
+ALTER TABLE table_name ADD COLUMN column_name DATA_TYPE;
+```
+- uma dica, existe o tipo NUMERIC (p, s), p de precisao e s de escala, ou seja, quantos digitos permite antes da virgula(precisao) e apos a virgula(escala):
+```SQL
+ALTER TABLE table ADD COLUMN column NUMERIC(4, 1);
+```
+- o comando acima vai permitir numeros como *4444, 1*, mas nao *44444, 1*, se passar na escala, ele arredonda.
 ## ALTERAÇÕES TABELA
 - podemos adicionar uma coluna usando *ALTER TABLE name_table ADD COLUMN column_name DATATYPE*
 - podemos remover uma coluna usando *ALTER TABLE table_name DROP COLUMN column_name;*
@@ -131,6 +140,14 @@ CREATE TABLE students (
   PRIMARY KEY(student_id, course_id)
 );
 ```
+- para transformar uma coluna ja existente em primary key:
+```SQL
+ALTER TABLE table_name ADD PRIMARY KEY(column_name);
+```
+- para tirar a chave primaria de uma coluna:
+```SQL
+ALTER TABLE table_name DROP CONSTRAINT constraint_name;
+```
 ## CHAVE ESTRANGEIRA (FOREIGN KEY)
 - a chave estrangeira é uma coluna que contém referẽncias à chave primária de outra tabela, uma tabela pode ter múltiplas chaves estrangeiras, ***mas não múltiplas chaves primárias****
 ```SQL
@@ -147,6 +164,10 @@ CREATE TABLE orders (
   FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 ```
+- outro comando:
+```SQL
+ALTER TABLE table_name ADD COLUMN column_name DATATYPE REFERENCES referenced_table_name(referenced_column_name);
+```
 ## RELAÇÕES
 - 1:1 (um para um): imagine que tem uma tabela de empregados e outra de carros, cada empregado so pode ter um carro e cada carro so pode ter um dono
 - 1:N (um para muitos): imagine uma tabela de clientes e outra de pedidos, um cliente pode ter varios pedidos, mas um pedido só pode ter um cliente
@@ -154,6 +175,10 @@ CREATE TABLE orders (
 - N:N (muitos para muitos): imagine uma tabela de livros e uma de autores, cada livro pode ter varios autores, e cada autor pode ter varios livros
 - importante lembrar que a relacao N:N os bancos de dados não suportam, então o que se faz é criar uma terceira tabela chamada *junction table* que vai linkar ambas tabelas que serão 1:N
 
+- se tenho um sistema 1:1 por exemplo, e quero setar a chave estrangeira para referenciar a outra, para *forçar* a coluna a ser sem repeticao, usaremos o *UNIQUE*:
+```SQL
+ALTER TABLE table_name ADD UNIQUE(column_name);
+```
 ## JOIN
 - join operations permitem que combinemos informações que sejam relacionadas numa query
   -- **inner join**: basicamente pega a intersecção das tabelas, vai filtrar o resultado para incluir apenas as linhas que os valores especificados são iguais em ambas tabelas
@@ -189,6 +214,7 @@ CREATE TABLE orders (
   -- **left outer join**: vai pegar todas as linhas da tabela esquerda e dar o match no que tiver match da tabela da direita, se nao tiver, ele vai colocar null
   -- **right outer join**: pega todas as linhas da tabela da direita, e da o match no que tiver da esquerda, se n tiver, é campo null
   -- **self join** permite fazer join com ela mesma
+
 
 
 
