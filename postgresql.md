@@ -131,6 +131,10 @@ CREATE TABLE table_name (
   PRIMARY KEY (column1, column2)
 );
 ```
+- para colocar tabelas que ja existem:
+```SQL
+ALTER TABLE table_name ADD PRIMARY KEY(column1, column2);
+```
 - num exemplo prático:
 ```SQL
 CREATE TABLE students (
@@ -214,6 +218,7 @@ ALTER TABLE table_name ADD UNIQUE(column_name);
   -- **left outer join**: vai pegar todas as linhas da tabela esquerda e dar o match no que tiver match da tabela da direita, se nao tiver, ele vai colocar null
   -- **right outer join**: pega todas as linhas da tabela da direita, e da o match no que tiver da esquerda, se n tiver, é campo null
   -- **self join** permite fazer join com ela mesma
+
 
 
 
