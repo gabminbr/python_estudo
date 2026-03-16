@@ -175,4 +175,36 @@ def index(request):
         context = {"latest_question_list": latest_question_list}
         return render(request, "polls/index.html", context)
     ```
--  
+## Lançar erro 404
+- temos que importar de *django.http* a função Http404()
+- e entao fazer um try except
+**polls/views.py**
+  ```python
+  from django.http import Http404
+  from django.shortcuts import render
+  
+  from .models import Question
+  
+  
+  # ...
+  def detail(request, question_id):
+      try:
+          question = Question.objects.get(pk=question_id)
+      except Question.DoesNotExist:
+          raise Http404("Question does not exist")
+      return render(request, "polls/detail.html", {"question": question})
+  ```
+- um atalho é o *get_object_or_404()*, da biblioteca *django.shortcuts*
+**polls/views.py**
+  ```python
+  from django.http import Http404
+  from django.shortcuts import render, get_object_or_404
+  
+  from .models import Question
+  
+  
+  # ...
+  def detail(request, question_id):
+      question = get_object_or_404(Question, pk=question_id)
+      return render(request, 'polls/detail.html', {'question':question}
+  ```
