@@ -208,3 +208,26 @@ def index(request):
       question = get_object_or_404(Question, pk=question_id)
       return render(request, 'polls/detail.html', {'question':question}
   ```
+## removendo hardcoded urls nos templates
+- agora faremos uso para aquele name quando estamos colocando path no urls.py, será com ele que faremos referencia a rota do template
+- antes disso, colocaremos o *app_name* no urls.py para evitar conflitos de nomes de arquivos
+**polls/urls.py**
+  ```python
+  from django.urls import path
+
+  from . import views
+  
+  app_name = "polls"
+  urlpatterns = [
+      path("", views.index, name="index"),
+      path("<int:question_id>/", views.detail, name="detail"),
+      path("<int:question_id>/results/", views.results, name="results"),
+      path("<int:question_id>/vote/", views.vote, name="vote"),
+  ]
+  ```
+- agora, no template, podemos fazer referencia usando *polls:arquivo_html*
+**polls/index.html**
+  ```html
+  <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
+  ```
+
