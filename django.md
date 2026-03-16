@@ -85,16 +85,94 @@ admin.site.register(Question)
 ```
 ## Views
 - as views podem ter mais de um argumento alem da request, como exemplo:
-```polls/urls.py
-def detail(request, question_id):
-    return HttpResponse("You're looking at question %s." % question_id)
+**polls/views.py**
+  ```python
+  def detail(request, question_id):
+      return HttpResponse("You're looking at question %s." % question_id)
+  
+  
+  def results(request, question_id):
+      response = "You're looking at the results of question %s."
+      return HttpResponse(response % question_id)
+  
+  
+  def vote(request, question_id):
+      return HttpResponse("You're voting on question %s." % question_id)
+  ```
+- e como consigo esse question_id? é atraves do urls
+**polls/urls.py**
+  ```python
+  from django.urls import path
+  
+  from . import views
+  
+  urlpatterns = [
+      # ex: /polls/
+      path("", views.index, name="index"),
+      # ex: /polls/5/
+      path("<int:question_id>/", views.detail, name="detail"),
+      # ex: /polls/5/results/
+      path("<int:question_id>/results/", views.results, name="results"),
+      # ex: /polls/5/vote/
+      path("<int:question_id>/vote/", views.vote, name="vote"),
+  ]
+  ```
+- o que acontece? o numero que o usuario escrever na url, estou dizendo para pegar esse dado e armazenar num dado chamado question_id do tipo inteiro, e ai a view vai pegar esse question_id, é como se chamasse a funcao *detail(request=<HttpRequest object>, question_id=34)*
+- na view vamos colocar um pouco de lógica:
+```python
+from django.http import HttpResponse
+
+from .models import Question
 
 
-def results(request, question_id):
-    response = "You're looking at the results of question %s."
-    return HttpResponse(response % question_id)
-
-
-def vote(request, question_id):
-    return HttpResponse("You're voting on question %s." % question_id)
+def index(request):
+    latest_question_list = Question.objects.order_by("-pub_date")[:5]
+    output = ", ".join([q.question_text for q in latest_question_list])
+    return HttpResponse(output)
 ```
+- entretanto, o design da pagina ta mt 'hardcoded' na view, e isso é ruim para boas praticas de codigo, pois se quisermos mudar o design da pagina, vamos ter que alterar isso, e a view não é responsavel por isso, entao o django separa isso com os templates
+## Templates
+- por padrão, o DjangoTemplates procura pelo 'templates' subdiretorio em cada app registrado no INSTALLED_APPS
+**templates/polls/index.html**
+  ```html
+  {% if latest_question_list %}
+      <ul>
+      {% for question in latest_question_list %}
+          <li><a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>
+      {% endfor %}
+      </ul>
+  {% else %}
+      <p>No polls are available.</p>
+  {% endif %}
+  ```
+- na view, usaremos das funcoes loader e do atributo context
+- usaremos o loader.get_template('dir/html_doc') para guardar na variavel o html que queremos
+- context é uma variavel que vai conter dicionarios para as variaveis que usamos dentro desse template, como no exemplo acima, o latest_question_list, exemplo:
+**polls/views.py**
+  ```python
+  from django.http import HttpResponse
+  from django.template import loader
+  
+  from .models import Question
+  
+  
+  def index(request):
+      latest_question_list = Question.objects.order_by("-pub_date")[:5]
+      template = loader.get_template("polls/index.html")
+      context = {"latest_question_list": latest_question_list}
+      return HttpResponse(template.render(context, request))
+  ```
+- um atalho para isso é o ***render(request, template_caminho, context)****
+  **polls/views.py**
+    ```python
+    from django.shortcuts import render
+
+    from .models import Question
+    
+    
+    def index(request):
+        latest_question_list = Question.objects.order_by("-pub_date")[:5]
+        context = {"latest_question_list": latest_question_list}
+        return render(request, "polls/index.html", context)
+    ```
+-  
