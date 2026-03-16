@@ -84,3 +84,17 @@ from .models import Question
 admin.site.register(Question)
 ```
 ## Views
+- as views podem ter mais de um argumento alem da request, como exemplo:
+```polls/urls.py
+def detail(request, question_id):
+    return HttpResponse("You're looking at question %s." % question_id)
+
+
+def results(request, question_id):
+    response = "You're looking at the results of question %s."
+    return HttpResponse(response % question_id)
+
+
+def vote(request, question_id):
+    return HttpResponse("You're voting on question %s." % question_id)
+```
