@@ -230,4 +230,56 @@ def index(request):
   ```html
   <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
   ```
-
+## requests do html, get post etc
+**polls/templates/polls/detail.html**
+  ```html
+  <form action="{% url 'polls:vote' question.id %}" method="post">
+  {% csrf_token %}
+  <fieldset>
+      <legend><h1>{{ question.question_text }}</h1></legend>
+      {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+      {% for choice in question.choice_set.all %}
+          <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+          <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+      {% endfor %}
+  </fieldset>
+  <input type="submit" value="Vote">
+  </form>
+  ```
+- como visto, temos o method post que indica que esse elemento mexe com o lado cliente-servidor, e também é interessante observar o *{& csrf_token %}*, como estamos mexendo com uma requisição do tipo POST, o Django facilita a vida obrigando a usar ele sempre que tivermos uma requisicao do tipo post
+- também vemos que na primeira linha, o form action ja diz para onde essa requisicao vai, no caso para polls/votes/question_id
+- agora editaremos a view de vote:
+**polls/views.py**
+  ```python
+  from django.db.models import F
+  from django.http import HttpResponse, HttpResponseRedirect
+  from django.shortcuts import get_object_or_404, render
+  from django.urls import reverse
+  
+  from .models import Choice, Question
+  
+  
+  # ...
+  def vote(request, question_id):
+      question = get_object_or_404(Question, pk=question_id)
+      try:
+          selected_choice = question.choice_set.get(pk=request.POST["choice"])
+      except (KeyError, Choice.DoesNotExist):
+          # Redisplay the question voting form.
+          return render(
+              request,
+              "polls/detail.html",
+              {
+                  "question": question,
+                  "error_message": "You didn't select a choice.",
+              },
+          )
+      else:
+          selected_choice.votes = F("votes") + 1
+          selected_choice.save()
+          # Always return an HttpResponseRedirect after successfully dealing
+          # with POST data. This prevents data from being posted twice if a
+          # user hits the Back button.
+          return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+    ```
+- como vemos, o fluxo é o seguinte: no html faz a requisicao para a url definida pela primeira linha do tipo post, a vote recebe essa requisicao, instancia question usando o question_id especificado pelo usuario e entao tenta instanciar a choice se ela existir, usando como filtro a sua primary key, *note que como é feita, vc pega o request.POST["choice"] sendo o choice o 'value' no html do input type=radio, o post meio que retorna um dicionario, e ai pegamos essa primary key a partir da chave 'choice' na requisicao*, se não existe, entra na exceção, e retorna um render com o context da *error_message* definida no html que antes estava vazio, caso exista essa choice, aumentaremos em 1 usando *F("votes") + 1*, *a vantagem de usarmos o F e não fazermos algo como *selected_choice.votes += 1; selected_choice.save()* é que se duas pessoas votarem ao mesmo tempo, no final vai processar o total de votos 1, e não 2, pois um vai sobrescrever o outro, então usamos do *F* para criar a instrução SQL *UPDATE*, pois o SQL lida bem com filas
