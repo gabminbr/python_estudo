@@ -285,3 +285,84 @@ def index(request):
 - como vemos, o fluxo é o seguinte: no html faz a requisicao para a url definida pela primeira linha do tipo post, a vote recebe essa requisicao, instancia question usando o question_id especificado pelo usuario e entao tenta instanciar a choice se ela existir, usando como filtro a sua primary key, *note que como é feita, vc pega o request.POST["choice"] sendo o choice o 'value' no html do input type=radio, o post meio que retorna um dicionario, e ai pegamos essa primary key a partir da chave 'choice' na requisicao*, se não existe, entra na exceção, e retorna um render com o context da *error_message* definida no html que antes estava vazio, caso exista essa choice, aumentaremos em 1 usando *F("votes") + 1*, *a vantagem de usarmos o F e não fazermos algo como *selected_choice.votes += 1; selected_choice.save()* é que se duas pessoas votarem ao mesmo tempo, no final vai processar o total de votos 1, e não 2, pois um vai sobrescrever o outro, então usamos do *F* para criar a instrução SQL *UPDATE*, pois o SQL lida bem com filas
 ## Generic Views
 - como dá pra observar, muitas views são bem parecidas, instanciam a model, e renderizam o template passando a linha no banco de dados para ser mostrado no template, entao o django fez algo para facilitar e promover o DRY
+- o primeiro passo é mudar a url nas urls.py
+**polls/urls.py**
+  ```python
+  from django.urls import path
+
+  from . import views
+  
+  app_name = "polls"
+  urlpatterns = [
+      path("", views.IndexView.as_view(), name="index"),
+      path("<int:pk>/", views.DetailView.as_view(), name="detail"),
+      path("<int:pk>/results/", views.ResultsView.as_view(), name="results"),
+      path("<int:question_id>/vote/", views.vote, name="vote"),
+  ]
+  ```
+- note que mudamos o *<int:question_id>* para *<int:pk>*, pq isso? pq a DetailView precisa de uma variavel chamada pk na url para buscar internamente usando o get_object()
+- já na view:
+**polls/views.py**
+  ```python
+  from django.db.models import F
+  from django.http import HttpResponseRedirect
+  from django.shortcuts import get_object_or_404, render
+  from django.urls import reverse
+  from django.views import generic
+  
+  from .models import Choice, Question
+  
+  
+  class IndexView(generic.ListView):
+      template_name = "polls/index.html"
+      context_object_name = "latest_question_list"
+
+    def get_queryset(self):
+        """Return the last five published questions."""
+        return Question.objects.order_by("-pub_date")[:5]
+
+  
+  class DetailView(generic.DetailView):
+      model = Question
+      template_name = "polls/detail.html"
+  
+  
+  class ResultsView(generic.DetailView):
+      model = Question
+      template_name = "polls/results.html"
+  
+  
+  def vote(request, question_id):
+      # same as above, no changes needed.
+      ...
+  ```
+- como pode ver, o django traz as generic views para ajudar a evitar de escrever muito codigo na mao, por exemplo, ele ja sabe que muita gente vai querer receber uma request para listar algo, e tambem sabe que vai receber uma request com um id de um objeto para consultar no banco de dados e mostrar algo na tela
+- outro ponto importante é, em detail.view nao precisamos dar o context, pq ele automaticamente ja gera um context do tipo Question e envia como question, agora em List, ele por padrao iria enviar como context *'question_list'*, logo foi necessario sobrescrever
+
+## Testes
+- por padrão, dentro do app, vamos criar um arquivo chamado *tests.py*, o sistema de teste vai automaticamente encontrar quaisquer testes em qualquer arquivo que comece com *test*
+**polls/tests.py**
+  ```python
+  import datetime
+
+  from django.test import TestCase
+  from django.utils import timezone
+  
+  from .models import Question
+  
+  
+  class QuestionModelTests(TestCase):
+      def test_was_published_recently_with_future_question(self):
+          """
+          was_published_recently() returns False for questions whose pub_date
+          is in the future.
+          """
+          time = timezone.now() + datetime.timedelta(days=30)
+          future_question = Question(pub_date=time)
+          self.assertIs(future_question.was_published_recently(), False)
+  ```
+- como pode observar, é uma boa prática separar o teste por models, o assertIs verifica se o metodo chamado retorna o valor que deveria retornar (o segundo parametro)
+- para rodar o teste use
+```bash
+python manage.py test polls
+```
