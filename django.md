@@ -366,3 +366,58 @@ def index(request):
 ```bash
 python manage.py test polls
 ```
+### Test Client
+- lembrando o uso do *reverse()*, ele leva como argumento o *app_name:name* que demos na urls, exemplo, se la esta algo como *path('<int:pk>/results/', views.ResultsView.as_view(), name='results')*, entao para obter a url dele facilmente, basta usar *reverse('polls:results')*
+- primeiro, os testes seguem o seguinte padrao, criamos uma classe de teste para cada contexto de um problema que queremos verificar numa model, exemplo, se temos a model Produto, e queremos testar no momento da sua criacao, testar a listagem e testar as requisicoes, fazemos algo como *ProdutoCriacaoTest(TestCase)*, *ProdutoListagemTest(TestCase)* e *ProdutoViewTest(TestCase)*
+- dentro de cada classe, estarao os métodos de teste, e por obrigação, cada método começa com *test_*, e elas seguem o padrão AAA:
+```python
+def test_produto_criado_com_sucesso(self):
+    
+    # 1. ARRANGE — prepara os dados
+    dados = {"nome": "Caneta", "preco": 2.50}
+    
+    # 2. ACT — executa a ação que você quer testar
+    produto = Produto.objects.create(**dados)
+    
+    # 3. ASSERT — verifica se o resultado é o esperado
+    self.assertEqual(produto.nome, "Caneta")
+    self.assertEqual(produto.preco, 2.50)
+
+
+---
+
+Resumo visual da lógica
+
+tests.py
+│
+├── class ProdutoCriacaoTest        ← contexto: criação
+│   ├── test_com_dados_validos
+│   ├── test_sem_nome
+│   └── test_preco_negativo
+│
+├── class ProdutoListagemTest       ← contexto: listagem
+│   ├── setUp (prepara dados)
+│   ├── test_retorna_todos
+│   └── test_filtra_por_preco
+│
+└── class ProdutoViewTest           ← contexto: views/HTTP
+    ├── test_get_retorna_200
+    └── test_post_cria_produto
+```
+- importante ressaltar, o django cria um banco de dados separado para cada metodo de teste, ou seja, iniciou um metodo que comeca com *test_*, cria-se um banco de dados e executa o que tiver dentro, apos terminar a execucao, o banco é destruido.
+- aqui um exemplo de teste:
+**polls/tests.py**
+  ```python
+  def test_two_past_questions(self):
+        """
+        The questions index page may display multiple questions.
+        """
+        question1 = create_question(question_text="Past question 1.", days=-30)
+        question2 = create_question(question_text="Past question 2.", days=-5)
+        response = self.client.get(reverse("polls:index"))
+        self.assertQuerySetEqual(
+            response.context["latest_question_list"],
+            [question2, question1],
+        )
+  ```
+- o self.client é um cliente http falso, que no caso ai esta simulando uma requisicao para /polls/index/ do tipo get, e dps faz um assertQuerySetEqual
