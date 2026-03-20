@@ -421,3 +421,22 @@ tests.py
         )
   ```
 - o self.client é um cliente http falso, que no caso ai esta simulando uma requisicao para /polls/index/ do tipo get, e dps faz um assertQuerySetEqual
+## Mexendo com arquivos
+- além do HTML, aplicações web também fornecem arquivos adicionais como imagens, JavaScript e CSS, arquivos necessários para renderizar a página, em Django, são chamados de *static files*, e é para ajudar a fornecer isso que existe a *django.contrib.staticfiles*, ela coleta quaisquer arquivos estaticos de cada aplicação (e qualquer outro lugar que especificar) e coloca num só lugar
+- assim como templates, faremos igual com static, dentro do app criamos a pasta static e dentro dela criamos a pasta pro app, agora uma pergunta, pq fazemos isso com templates e com static? a resposta é *quando o Django busca templates e arquivos estáticos, ele une os diretórios de todos os apps instalados num único espaço de busca. Isso significa que se dois apps tiverem um arquivo com o mesmo nome, como index.html, o Django vai pegar o primeiro que encontrar, podendo carregar o arquivo errado sem avisar*.
+- usaremos a palavra *static* no template:
+- primeiro, criamos em polls/templates/polls um arquivo chamado *style.css* com qualquer regra de estilização
+**polls/template/index.html**
+  ```html
+  {% load static %}
+  <link rel='stylesheet' href="{% static 'polls/style.css' %}">
+  ...
+  ```
+- para adicionar imagens, criamos um diretorio chamado images em static, ficando assim *polls/static/polls/images/* e adiciona uma imagem chamada *background.jpg*
+**polls/static/polls/style.css**
+  ```css
+  body {
+    background: white url("images/background.png") no-repeat;
+  }
+  ```
+
