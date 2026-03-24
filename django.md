@@ -439,4 +439,5 @@ tests.py
     background: white url("images/background.png") no-repeat;
   }
   ```
-
+## Customizando o admin
+- 
