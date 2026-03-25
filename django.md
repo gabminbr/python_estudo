@@ -440,4 +440,79 @@ tests.py
   }
   ```
 ## Customizando o admin
-- 
+- uma modelAdmin basicamente são classes que vocẽ vai criar para customizar o jeito que suas models aparecem no admin, ao fazer apenas um *admin.site.register(Model)*, cria uma interface genérica, então faremos alterações:
+- **polls/admin.py**
+  ```python
+  from django.contrib import admin
+  from .models import Question
+
+  class QuestionAdmin(admin.ModelAdmin):
+    fields = ['pub_date', 'question_text']
+
+  admin.site.register(Question, QuestionAdmin)
+  ```
+- esse código muda a ordem que aparece no admin das questions, agr primeiro vem a data de publicacao, e depois question text
+- além disso, podemos customizar nossos atributos em boxes, como no exemplo:
+- **polls/admin.py**
+  ```python
+  from django.contrib import admin
+
+  from .models import Question
+  
+  
+  class QuestionAdmin(admin.ModelAdmin):
+      fieldsets = [
+          (None, {"fields": ["question_text"]}),
+          ("Date information", {"fields": ["pub_date"]}),
+      ]
+  
+  
+  admin.site.register(Question, QuestionAdmin)
+  ```
+- o primeiro elemento de cada tupla é o título do fieldset
+- agora, se quisermos mostrar as choices que estão relacionadas àquela question específica?
+- **polls/admin.py**
+  ```python
+  from django.contrib import admin
+  
+  from .models import Choice, Question
+  
+  
+  class ChoiceInline(admin.StackedInline): # aqui podemos mudar para TabularInline, Stacked mostra em formas de linhas, já Tabular, em forma de colunas
+      model = Choice
+      extra = 3 # isso vai exibir por padrão 3 campos para criação de novas choices, mesmo se já houver choices nessa question
+  
+  
+  class QuestionAdmin(admin.ModelAdmin):
+      fieldsets = [
+          (None, {"fields": ["question_text"]}),
+          ("Date information", {"fields": ["pub_date"], "classes": ["collapse"]}),
+      ]
+      inlines = [ChoiceInline]
+  
+  
+  admin.site.register(Question, QuestionAdmin)
+  ```
+- funcionalidades extras:
+  - o *list_display()*, que vai organizar a forma como vemos as questions cadastradas no admin, por padrao, ele exibe pelo *__str__* de cada question, mas podemos mudar usando ela e colocando como argumento como deve ser organizado os campos a ser visto
+  - *list_filter()* adiciona uma barra lateral que filtra pelo argumento colocado, como data de publicacao com o *pub_date* por ex
+  - *search_fields = ['campo_pesquisa']* adiciona um campo de pesquisa no atributo fornecido
+  - *fields = []* como ja mostrado, organiza o jeito que veremos a informacao da model
+  - *fieldsets = []* como mostrado tambem, organiza o formulario em campos
+- podemos colocar no list_display, funcoes da model tambem, como a 'was_published_recently', e podemos customizar o nome da coluna dela, uma vez que o django usa por padrao o nome da funcao sem os underline, usando o @admin.display na propria model:
+- **polls/models.py**
+  ```python
+  from django.contrib import admin
+
+  class Question(models.Model):
+  # ...
+  @admin.display(
+    boolean=True,
+    ordering='pub_date',
+    description='Published recently?',
+  )
+  # ...
+  ```
+- o boolean=True, serve para 'ativar' os circulozinhos verde e vermelho, so pra deixar bonito a coluna caso for verdadeiro ou falso, e nao aparecer por extenso False ou True
+- por padrao, colunas feitas de funcoes nao podem ser ordenadas, ao dizer ordering='pub_date' eu permito que ela seja ordenada ao tocar, e pelo atributo 'pub_date'
+- description é o titulo da coluna que vai aparecer
