@@ -516,3 +516,6 @@ tests.py
 - o boolean=True, serve para 'ativar' os circulozinhos verde e vermelho, so pra deixar bonito a coluna caso for verdadeiro ou falso, e nao aparecer por extenso False ou True
 - por padrao, colunas feitas de funcoes nao podem ser ordenadas, ao dizer ordering='pub_date' eu permito que ela seja ordenada ao tocar, e pelo atributo 'pub_date'
 - description é o titulo da coluna que vai aparecer
+## Authentication e Authorization
+- objetos do tipo *User* são o centro do sistema de autenticação, eles representam as pessoas interagindo com sua aplicação, seus principais atributos são *username*, *password*, *email*, *first_name* e *last_name*
+- criando usuarios é bem simples, basta fazermos um *user = User.objects.create_user(username, email, senha, e argumentos opcionais)*
